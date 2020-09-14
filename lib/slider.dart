@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+// NOT: localda _onDragStart ve _onDragEnd metodları oluşturulmasada localde konumlandırma yapılabilir.
+
 // drag işlemi mause'a tıklayıp sağa-sola yukarı-aşağı hareket ettirilmesidir.
 // mause'a tıklanıldığı ilk alan: drag start
 // mause'un tıklı bir şekilde gezdirildiği alan: update
@@ -16,6 +18,26 @@ class CustomSlider extends StatefulWidget {
 }
 
 class _CustomSliderState extends State<CustomSlider> {
+  void _onDragUpdate(BuildContext cont, DragUpdateDetails update) {
+    RenderBox box =
+        cont.findRenderObject(); // findRenderObject bir kutu donderecek
+    Offset offset = box.globalToLocal(update.globalPosition);
+    // globalToLocal metodu ile sahip olunan pozisyon bilgileri
+    //             locala göre yeniden dizayn edilmesini saglar.
+    // offset verisi yer belirtir.
+    print(offset.dx); // sadece x eksenindeki degişiklikleri yazacak
+  }
+
+  // void _onDragStart(BuildContext cont, DragStartDetails start) {
+  //   RenderBox box = cont.findRenderObject();
+  //   Offset offset = box.globalToLocal(start.globalPosition);
+  //   print(offset.dx);
+  // }
+
+  // void _onDragEnd(BuildContext cont, DragEndDetails update) {
+  //   setState(() {});
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,9 +47,13 @@ class _CustomSliderState extends State<CustomSlider> {
           height: widget.yukseklik,
           color: Colors.black,
         ),
-        onHorizontalDragUpdate: (DragUpdateDetails update) {
-          print(update.globalPosition);
-        },
+        onHorizontalDragUpdate: (DragUpdateDetails update) =>
+            _onDragUpdate(context, update),
+        //  print(update.globalPosition); // mause'un o anki pozisyonu
+        // container içinde de dışındada pozisyonu gösterir.
+        // onHorizontalDragStart: (DragStartDetails start) =>
+        //     _onDragStart(context, start),
+        // onHorizontalDragEnd: (DragEndDetails end) => _onDragEnd(context, end),
       ),
     );
   }
