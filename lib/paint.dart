@@ -18,10 +18,10 @@ class Painter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    _paintAnchors(canvas, size);
-    // bu metodda çizim gerçekleştiriliyor.
-    _paintLine(canvas, size);
-    _paintBlock(canvas, size);
+    _paintAnchors(canvas, size); // bu metodda çizim gerçekleştiriliyor.
+    //_paintLine(canvas, size);
+    //_paintBlock(canvas, size);
+    _paintWaveLine(canvas, size);
   }
 
   _paintAnchors(Canvas canvas, Size size) {
@@ -41,6 +41,36 @@ class Painter extends CustomPainter {
     Rect sliderRect =
         Offset(sliderPozisyon, size.height - 7.5) & Size(5.0, 15.0);
     canvas.drawRect(sliderRect, fillPainter);
+  }
+
+  _paintWaveLine(Canvas canvas, Size size) {
+    double bendWidth =
+        40.0; // bend: bükmek anlamında bendwidth: bükülme genişliği demek
+    double bezierWidth = 40.0;
+
+    double startOfBend =
+        sliderPozisyon - bendWidth / 2; //bükmenin başlangıç noktası.
+    double startOfBezierWidth = startOfBend - bezierWidth;
+    double endOfBend = sliderPozisyon + bendWidth / 2;
+    double endOfBezier = endOfBend + bezierWidth / 2;
+
+    double leftControlPoint1 = startOfBend;
+    double leftControlPoint2 = startOfBend;
+    double rightControlPoint1 = endOfBend;
+    double rightControlPoint2 = endOfBend;
+
+    double controlHeight = 0;
+    double centerPoint = sliderPozisyon;
+
+    Path path = Path();
+    path.moveTo(0.0, size.height);
+    path.lineTo(startOfBezierWidth, size.height);
+    path.cubicTo(leftControlPoint1, size.height, leftControlPoint2,
+        controlHeight, centerPoint, controlHeight);
+    path.cubicTo(rightControlPoint1, controlHeight, rightControlPoint2,
+        size.height, endOfBezier, size.height);
+    path.lineTo(size.width, size.height);
+    canvas.drawPath(path, wavePainter);
   }
 
   @override
