@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:training42_animasyonlu_slider_gelistirme/paint.dart';
 
 // NOT: localda _onDragStart ve _onDragEnd metodları oluşturulmasada localde konumlandırma yapılabilir.
 
@@ -10,8 +11,13 @@ import 'package:flutter/material.dart';
 class CustomSlider extends StatefulWidget {
   final double genislik;
   final double yukseklik;
+  final Color renk;
 
-  CustomSlider({Key key, this.genislik = 300.0, this.yukseklik = 50.0});
+  CustomSlider(
+      {Key key,
+      this.genislik = 300.0,
+      this.yukseklik = 50.0,
+      this.renk = Colors.red});
 
   @override
   _CustomSliderState createState() => _CustomSliderState();
@@ -67,18 +73,24 @@ class _CustomSliderState extends State<CustomSlider> {
         child: Container(
           width: widget.genislik,
           height: widget.yukseklik,
-          color: Colors.black,
-          child: Column(
-            children: [
-              Text(
-                dragYuzdelik.toString(),
-                style: TextStyle(color: Colors.white),
-              ),
-              Text(
-                dragPozisyon.toString(),
-                style: TextStyle(color: Colors.white),
-              )
-            ],
+          // color: Colors.black,
+          // child: Column(
+          //   children: [
+          //     Text(
+          //       dragYuzdelik.toString(),
+          //       style: TextStyle(color: Colors.white),
+          //     ),
+          //     Text(
+          //       dragPozisyon.toString(),
+          //       style: TextStyle(color: Colors.white),
+          //     )
+          //   ],
+          // ),
+          child: CustomPaint(
+            painter: Painter(
+                renk: widget.renk,
+                sliderPozisyon: dragPozisyon,
+                dragYuzdelik: dragYuzdelik),
           ),
         ),
         onHorizontalDragUpdate: (DragUpdateDetails update) =>
