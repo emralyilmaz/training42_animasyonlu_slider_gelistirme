@@ -21,6 +21,7 @@ class Painter extends CustomPainter {
     _paintAnchors(canvas, size);
     // bu metodda çizim gerçekleştiriliyor.
     _paintLine(canvas, size);
+    _paintBlock(canvas, size);
   }
 
   _paintAnchors(Canvas canvas, Size size) {
@@ -34,6 +35,12 @@ class Painter extends CustomPainter {
     path.moveTo(0.0, size.height); // çizginin başlangıç noktası
     path.lineTo(size.width, size.height); // çizginin bitiş noktası
     canvas.drawPath(path, wavePainter);
+  }
+
+  _paintBlock(Canvas canvas, Size size) {
+    Rect sliderRect =
+        Offset(sliderPozisyon, size.height - 7.5) & Size(5.0, 15.0);
+    canvas.drawRect(sliderRect, fillPainter);
   }
 
   @override
