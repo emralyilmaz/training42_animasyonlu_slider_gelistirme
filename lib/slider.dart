@@ -11,32 +11,54 @@ class CustomSlider extends StatefulWidget {
   final double genislik;
   final double yukseklik;
 
-  CustomSlider({Key key, this.genislik = 350.0, this.yukseklik = 50.0});
+  CustomSlider({Key key, this.genislik = 300.0, this.yukseklik = 50.0});
 
   @override
   _CustomSliderState createState() => _CustomSliderState();
 }
 
 class _CustomSliderState extends State<CustomSlider> {
-  void _onDragUpdate(BuildContext cont, DragUpdateDetails update) {
-    RenderBox box =
-        cont.findRenderObject(); // findRenderObject bir kutu donderecek
-    Offset offset = box.globalToLocal(update.globalPosition);
-    // globalToLocal metodu ile sahip olunan pozisyon bilgileri
-    //             locala göre yeniden dizayn edilmesini saglar.
-    // offset verisi yer belirtir.
-    print(offset.dx); // sadece x eksenindeki degişiklikleri yazacak
+  double dragPozisyon = 0;
+  double dragYuzdelik = 0;
+
+  void _udpateDragPozition(Offset val) {
+    double _yeniDragPozisyon = 0;
+
+    if (val.dx <= 0) {
+      _yeniDragPozisyon = 0;
+    } else if (val.dx >= widget.genislik) {
+      _yeniDragPozisyon = widget.genislik;
+    } else {
+      _yeniDragPozisyon = val.dx;
+    }
+
+    setState(() {
+      dragPozisyon = _yeniDragPozisyon;
+      dragYuzdelik = dragPozisyon / widget.genislik;
+      print(dragPozisyon);
+    });
   }
 
-  // void _onDragStart(BuildContext cont, DragStartDetails start) {
-  //   RenderBox box = cont.findRenderObject();
-  //   Offset offset = box.globalToLocal(start.globalPosition);
-  //   print(offset.dx);
-  // }
+  void _onDragUpdate(BuildContext cont, DragUpdateDetails update) {
+    RenderBox box = cont.findRenderObject();
+    // findRenderObject bir kutu donderecek
+    Offset offset =
+        box.globalToLocal(update.globalPosition); // offset verisi yer belirtir.
+    // globalToLocal metodu ile sahip olunan pozisyon bilgileri locala göre yeniden dizayn edilmesini saglar.
+    // print(offset.dx); // sadece x eksenindeki degişiklikleri yazacak
+    _udpateDragPozition(offset);
+  }
 
-  // void _onDragEnd(BuildContext cont, DragEndDetails update) {
-  //   setState(() {});
-  // }
+  void _onDragStart(BuildContext cont, DragStartDetails start) {
+    RenderBox box = cont.findRenderObject();
+    Offset offset = box.globalToLocal(start.globalPosition);
+    // print(offset.dx);
+    _udpateDragPozition(offset);
+  }
+
+  void _onDragEnd(BuildContext cont, DragEndDetails update) {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,14 +68,26 @@ class _CustomSliderState extends State<CustomSlider> {
           width: widget.genislik,
           height: widget.yukseklik,
           color: Colors.black,
+          child: Column(
+            children: [
+              Text(
+                dragYuzdelik.toString(),
+                style: TextStyle(color: Colors.white),
+              ),
+              Text(
+                dragPozisyon.toString(),
+                style: TextStyle(color: Colors.white),
+              )
+            ],
+          ),
         ),
         onHorizontalDragUpdate: (DragUpdateDetails update) =>
             _onDragUpdate(context, update),
         //  print(update.globalPosition); // mause'un o anki pozisyonu
         // container içinde de dışındada pozisyonu gösterir.
-        // onHorizontalDragStart: (DragStartDetails start) =>
-        //     _onDragStart(context, start),
-        // onHorizontalDragEnd: (DragEndDetails end) => _onDragEnd(context, end),
+        onHorizontalDragStart: (DragStartDetails start) =>
+            _onDragStart(context, start),
+        onHorizontalDragEnd: (DragEndDetails end) => _onDragEnd(context, end),
       ),
     );
   }
