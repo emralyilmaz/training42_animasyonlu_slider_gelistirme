@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class Painter extends CustomPainter {
@@ -6,6 +8,8 @@ class Painter extends CustomPainter {
   final Color renk;
   final Paint fillPainter;
   final Paint wavePainter;
+
+  double _oncekiSliderPozisyon = 0.0;
 
   Painter({this.sliderPozisyon, this.dragYuzdelik, this.renk})
       : fillPainter = Paint()
@@ -17,6 +21,20 @@ class Painter extends CustomPainter {
           ..strokeWidth = 2.5;
 
   WaveLineDefinitions _useWaveLineDefinitions() {
+    double bukulebilirlik = 25.0;
+    double maxSliderDifference = 20.0;
+    double slideDifference = (sliderPozisyon - _oncekiSliderPozisyon).abs();
+    // abs() mutlak değer yapar.
+
+    slideDifference = (slideDifference > maxSliderDifference)
+        ? maxSliderDifference
+        : slideDifference;
+
+    double bend =
+        lerpDouble(0.0, bukulebilirlik, slideDifference / maxSliderDifference);
+    bool solYon = sliderPozisyon < _oncekiSliderPozisyon;
+    bend = solYon ? -bend : bend;
+
     double bendWidth =
         40.0; // bend: bükmek anlamında bendwidth: bükülme genişliği demek
     double bezierWidth = 40.0;
@@ -32,8 +50,15 @@ class Painter extends CustomPainter {
     double rightControlPoint1 = endOfBend;
     double rightControlPoint2 = endOfBend;
 
+    leftControlPoint1 = leftControlPoint1 + bend;
+    leftControlPoint2 = leftControlPoint2 - bend;
+    rightControlPoint1 = rightControlPoint1 - bend;
+    rightControlPoint2 = rightControlPoint2 + bend;
+
     double controlHeight = 0;
     double centerPoint = sliderPozisyon;
+
+    centerPoint = centerPoint - bend;
 
     WaveLineDefinitions waveLine = WaveLineDefinitions(
         bendWidth: bendWidth,
@@ -103,8 +128,10 @@ class Painter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
+  bool shouldRepaint(Painter oldDelegate) {
     // bu metodda paintler arası versiyonlar inceleniyor. yani önceki versiyonları görebiliyoruz.
+    _oncekiSliderPozisyon = oldDelegate.sliderPozisyon;
+
     return true;
   }
 }
